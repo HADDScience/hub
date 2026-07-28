@@ -1,6 +1,7 @@
 "use client"
 
 import { forwardRef } from "react"
+import Image from "next/image"
 
 import { cn } from "@/lib/utils"
 import { STATUS_LABEL, type LauncherApp } from "@/lib/apps"
@@ -53,13 +54,18 @@ export const AppIcon = forwardRef<HTMLButtonElement, AppIconProps>(
       >
         <span
           className={cn(
-            "relative grid size-14 place-items-center rounded-[18px] bg-gradient-to-br text-2xl text-white shadow-sm ring-1 ring-black/10 transition-transform sm:size-16 sm:text-[28px]",
-            app.tint,
+            "relative grid size-14 place-items-center overflow-hidden rounded-[22%] shadow-sm ring-1 ring-black/10 transition-transform sm:size-16",
             !disabled && "group-hover:-translate-y-0.5 group-active:scale-95"
           )}
           aria-hidden
         >
-          {app.glyph}
+          <Image
+            src={app.icon}
+            alt=""
+            sizes="64px"
+            className="size-full object-cover"
+            priority
+          />
           {opensInNewTab ? (
             <span className="absolute -top-1 -right-1 grid size-4 place-items-center rounded-full bg-background text-[9px] leading-none text-muted-foreground ring-1 ring-foreground/15">
               ↗

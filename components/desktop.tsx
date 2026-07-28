@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import Image from "next/image"
 
 import { AppIcon } from "@/components/app-icon"
 import { MenuBar } from "@/components/menu-bar"
@@ -147,13 +148,15 @@ export function Desktop() {
                     )}
                   >
                     <span
-                      className={cn(
-                        "grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-lg text-white ring-1 ring-black/10",
-                        app.tint
-                      )}
+                      className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[22%] ring-1 ring-black/10"
                       aria-hidden
                     >
-                      {app.glyph}
+                      <Image
+                        src={app.icon}
+                        alt=""
+                        sizes="36px"
+                        className="size-full object-cover"
+                      />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="block text-xs font-medium">

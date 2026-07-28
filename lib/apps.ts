@@ -2,7 +2,15 @@
  * 런처에 표시할 앱 목록.
  *
  * 앱을 추가하려면 이 배열에 항목 하나만 넣으면 된다. 화면·정렬·상태 배지가 따라온다.
+ * 아이콘은 assets/icons 에 두고 정적 import 한다 (basePath 처리를 Next 가 해준다).
  */
+
+import type { StaticImageData } from "next/image"
+
+import crmIcon from "@/assets/icons/crm.png"
+import ipPlatformIcon from "@/assets/icons/ip-platform.png"
+import omnisIcon from "@/assets/icons/omnis.png"
+import ramanIcon from "@/assets/icons/raman-diff.png"
 
 export type AppStatus = "live" | "coming" | "maintenance"
 
@@ -15,9 +23,11 @@ export interface LauncherApp {
   /** 비어 있으면(제작 예정) 실행되지 않는다 */
   url: string | null
   status: AppStatus
-  /** 아이콘 글리프 (이모지 대신 기하학적 기호로 통일) */
+  /** 앱 아이콘 이미지 */
+  icon: StaticImageData
+  /** 이미지를 못 불러올 때 대신 쓰는 글리프 */
   glyph: string
-  /** 아이콘 배경 그라디언트 (tailwind 클래스) */
+  /** 글리프 폴백용 배경 그라디언트 (tailwind 클래스) */
   tint: string
   /** 같은 브라우저 탭에서 열지 여부. 외부 서비스는 새 탭. */
   sameTab?: boolean
@@ -30,6 +40,7 @@ export const APPS: LauncherApp[] = [
     description: "채팅 기반 업무 관리 시스템",
     url: "https://omnis-omega.vercel.app",
     status: "live",
+    icon: omnisIcon,
     glyph: "◈",
     tint: "from-violet-500 to-indigo-600",
   },
@@ -39,6 +50,7 @@ export const APPS: LauncherApp[] = [
     description: "지식재산권 팔로우업 · 상표·특허 현황과 미결 액션",
     url: "https://haddscience.github.io/ip-platform/",
     status: "live",
+    icon: ipPlatformIcon,
     glyph: "▤",
     tint: "from-teal-500 to-cyan-600",
     sameTab: true,
@@ -49,6 +61,7 @@ export const APPS: LauncherApp[] = [
     description: "Raman G-peak 차이(before-after) 분석 도구",
     url: "https://haddscience.github.io/raman-g-peak-diff/",
     status: "live",
+    icon: ramanIcon,
     glyph: "∿",
     tint: "from-amber-500 to-orange-600",
     sameTab: true,
@@ -59,6 +72,7 @@ export const APPS: LauncherApp[] = [
     description: "고객 관리 — 제작 예정",
     url: null,
     status: "coming",
+    icon: crmIcon,
     glyph: "◎",
     tint: "from-slate-400 to-slate-600",
   },
