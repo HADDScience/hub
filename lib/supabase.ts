@@ -31,11 +31,17 @@ export const supabase = createClient(url, anonKey, {
 })
 
 /**
- * OAuth 로그인 후 돌아올 주소. basePath(`/hub`)를 포함해야 한다.
- * Supabase 대시보드의 Redirect URLs 에 이 값(오리진 + `/hub/`)을 등록해야 한다.
+ * OAuth 왕복 후 돌아올 주소. basePath(`/hub`)를 포함해야 한다.
+ *
+ * 기본값은 허브 루트(로그인). 계정 연결(linkIdentity)은 원래 보던 자리로
+ * 돌아와야 하므로 `redirectTo("/account/")` 처럼 경로를 넘긴다.
+ * `trailingSlash: true` 라 경로 끝의 `/` 를 붙여야 리다이렉트가 한 번 덜 돈다.
+ *
+ * 여기서 만들어지는 주소는 모두 Supabase 대시보드의 Redirect URLs 에
+ * 등록돼 있어야 한다 (`<오리진>/hub/`, `<오리진>/hub/account/`).
  */
-export function redirectTo(): string {
+export function redirectTo(path: string = "/"): string {
   if (typeof window === "undefined") return ""
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/hub"
-  return `${window.location.origin}${basePath}/`
+  return `${window.location.origin}${basePath}${path}`
 }

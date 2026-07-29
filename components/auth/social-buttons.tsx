@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils"
  *  - 카카오: #FEE500 고정, 검정 말풍선 심볼과 검정 텍스트
  *
  * 정적 배포라 외부 이미지를 쓰지 않고 인라인 SVG 로 둔다.
+ * 마크는 계정 설정의 연결 목록(LinkedAccounts)에서도 쓰므로 export 한다.
  */
 
-function GoogleMark() {
+export function GoogleMark() {
   return (
     <svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden focusable="false">
       <path
@@ -33,7 +34,7 @@ function GoogleMark() {
   )
 }
 
-function KakaoMark() {
+export function KakaoMark() {
   return (
     <svg viewBox="0 0 18 18" className="size-[18px]" aria-hidden focusable="false">
       <path
