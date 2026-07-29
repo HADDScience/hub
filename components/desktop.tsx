@@ -13,13 +13,10 @@ import { cn } from "@/lib/utils"
 
 type View = "grid" | "list"
 
+/** 앱은 항상 새 탭에서 연다 — 허브는 열어둔 채로 남는다. */
 function openApp(app: LauncherApp) {
   if (!app.url) return
-  if (app.sameTab) {
-    window.location.href = app.url
-  } else {
-    window.open(app.url, "_blank", "noopener,noreferrer")
-  }
+  window.open(app.url, "_blank", "noopener,noreferrer")
 }
 
 /**

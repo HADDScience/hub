@@ -29,8 +29,6 @@ export interface LauncherApp {
   glyph: string
   /** 글리프 폴백용 배경 그라디언트 (tailwind 클래스) */
   tint: string
-  /** 같은 브라우저 탭에서 열지 여부. 외부 서비스는 새 탭. */
-  sameTab?: boolean
 }
 
 export const APPS: LauncherApp[] = [
@@ -53,7 +51,6 @@ export const APPS: LauncherApp[] = [
     icon: ipPlatformIcon,
     glyph: "▤",
     tint: "from-teal-500 to-cyan-600",
-    sameTab: true,
   },
   {
     id: "raman",
@@ -64,7 +61,6 @@ export const APPS: LauncherApp[] = [
     icon: ramanIcon,
     glyph: "∿",
     tint: "from-amber-500 to-orange-600",
-    sameTab: true,
   },
   {
     id: "crm",

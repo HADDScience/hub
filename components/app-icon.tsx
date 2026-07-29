@@ -2,8 +2,6 @@
 
 import { forwardRef } from "react"
 import Image from "next/image"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons"
 
 import { cn } from "@/lib/utils"
 import { STATUS_LABEL, type AppStatus, type LauncherApp } from "@/lib/apps"
@@ -27,7 +25,6 @@ const STATUS_DOT: Record<AppStatus, string> = {
 export const AppIcon = forwardRef<HTMLButtonElement, AppIconProps>(
   function AppIcon({ app, selected, openOnSingleClick, onSelect, onOpen }, ref) {
     const disabled = app.url === null
-    const opensInNewTab = !disabled && !app.sameTab
 
     return (
       <button
@@ -72,11 +69,6 @@ export const AppIcon = forwardRef<HTMLButtonElement, AppIconProps>(
             className="size-full object-cover"
             priority
           />
-          {opensInNewTab ? (
-            <span className="absolute top-1 right-1 grid size-4 place-items-center rounded-full bg-background/90 text-muted-foreground ring-1 ring-border backdrop-blur">
-              <HugeiconsIcon icon={ArrowUpRight01Icon} size={10} />
-            </span>
-          ) : null}
           {/* 상태 점 — 기능적 색 코딩 (규칙 24) */}
           <span
             className={cn(
