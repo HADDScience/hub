@@ -63,12 +63,29 @@ pnpm typecheck
 `main` 에 push 하면 GitHub Actions 가 빌드해 GitHub Pages 로 배포합니다
 (`.github/workflows/deploy.yml`). Next.js 정적 내보내기(`output: "export"`)라 서버가 없습니다.
 
-## 로그인 (예정)
+## 로그인
 
-Supabase Auth(Google·카카오)를 붙여 허브에서 한 번 로그인하면 같은 오리진의 앱
-(`ip-platform`, 추후 `CRM`)은 세션을 그대로 공유하도록 할 예정입니다.
+Supabase Auth(Google·카카오) 소셜 로그인입니다. 허브에서 한 번 로그인하면 같은 오리진의
+앱(`ip-platform`, 추후 `CRM`)은 localStorage 의 `sb-<project-ref>-auth-token` 을 그대로
+공유하므로 자동으로 로그인 상태가 됩니다.
 omnis 는 다른 도메인(vercel.app)이고 NextAuth 를 쓰고 있어 세션이 자동 공유되지 않습니다 —
 소셜 로그인 제공자 세션이 살아 있어 리다이렉트 한 번으로 통과되는 수준입니다.
+
+### 허브가 유일한 로그인 화면입니다
+
+같은 오리진의 툴은 **자체 로그인 화면을 두지 않습니다.** 로그아웃 상태면 허브로 보내고,
+허브가 로그인을 마친 뒤 원래 자리로 돌려보냅니다.
+
+```
+/hub/?next=/ip-platform/todo/
+```
+
+- `next` 는 **같은 오리진의 절대 경로**만 받습니다. `//…`, `/\…` 는 오픈 리다이렉트라
+  무시합니다 (`lib/next-target.ts`).
+- 받은 즉시 sessionStorage 로 옮기고 주소창에서 지웁니다. OAuth 왕복 동안 주소가
+  갈아치워지기 때문이고, redirectTo 에 얹으면 Supabase 콘솔의 Redirect URLs 에
+  쿼리까지 허용하는 와일드카드를 등록해야 하기 때문입니다.
+- 이미 로그인한 상태로 `?next=` 를 달고 들어와도 데스크톱을 거치지 않고 바로 돌려보냅니다.
 
 ## 기술 스택
 
