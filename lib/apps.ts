@@ -36,7 +36,7 @@ export const APPS: LauncherApp[] = [
     id: "omnis",
     name: "omnis",
     description: "채팅 기반 업무 관리 시스템",
-    url: "https://omnis-omega.vercel.app",
+    url: "https://omnis-hadd.vercel.app",
     status: "live",
     icon: omnisIcon,
     glyph: "◈",

@@ -92,7 +92,7 @@ export function UserMenu() {
               role="menuitem"
               onClick={() => {
                 setOpen(false)
-                void signOut()
+                signOut()
               }}
               className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-[12.5px] text-destructive transition-colors outline-none hover:bg-destructive/10 focus-visible:bg-destructive/10"
             >

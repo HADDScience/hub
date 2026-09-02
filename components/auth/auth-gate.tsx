@@ -1,25 +1,32 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import type { Session } from "@supabase/supabase-js"
 
-import { supabase, redirectTo } from "@/lib/supabase"
+import {
+  clearStoredSession,
+  OmnisAuthError,
+  readStoredSession,
+  redeemGrant,
+  startSignIn,
+  storeSession,
+  takeGrantFromHash,
+  verifyStoredSession,
+  type OmnisSession,
+  type OmnisUser,
+} from "@/lib/omnis-auth"
 import { LoginScreen } from "@/components/auth/login-screen"
 import { captureNextTarget, takeNextTarget } from "@/lib/next-target"
 
-/** 소셜 로그인 세션에서 뽑아낸, 화면에 쓰기 좋은 사용자 프로필. */
-export interface HubUser {
-  id: string
-  email: string | null
-  name: string
+/** 화면에 쓰기 좋은 사용자 프로필. Omnis 자체계정에서 온다. */
+export interface HubUser extends OmnisUser {
+  /** Omnis 계정에는 프로필 사진이 없다. Avatar 는 이름 이니셜로 떨어진다. */
   avatarUrl: string | null
-  provider: string | null
 }
 
 interface AuthValue {
-  session: Session
+  session: OmnisSession
   user: HubUser
-  signOut: () => Promise<void>
+  signOut: () => void
 }
 
 const AuthContext = createContext<AuthValue | null>(null)
@@ -31,35 +38,23 @@ export function useAuth(): AuthValue {
   return value
 }
 
-function toHubUser(session: Session): HubUser {
-  const meta = session.user.user_metadata as Record<string, unknown>
-  const name =
-    String(meta?.full_name ?? meta?.name ?? "") ||
-    session.user.email?.split("@")[0] ||
-    "사용자"
-  const avatarUrl =
-    (typeof meta?.avatar_url === "string" && meta.avatar_url) ||
-    (typeof meta?.picture === "string" && meta.picture) ||
-    null
-  return {
-    id: session.user.id,
-    email: session.user.email ?? null,
-    name,
-    avatarUrl,
-    provider: session.user.app_metadata?.provider ?? null,
-  }
+function toHubUser(user: OmnisUser): HubUser {
+  return { ...user, avatarUrl: null }
 }
 
 type Phase =
   | { kind: "loading" }
-  | { kind: "signed-out" }
+  | { kind: "signed-out"; error: string | null }
   | { kind: "leaving" }
-  | { kind: "ready"; session: Session }
+  | { kind: "ready"; session: OmnisSession }
 
 /**
- * 소셜 로그인 게이트. 미인증 사용자는 로그인 화면을 보고,
- * 인증되면 자식(데스크톱·계정 페이지)이 렌더된다.
- * 승인/멤버십 절차 없이 소셜 로그인만으로 통과하는 단순 게이트다.
+ * 로그인 게이트. 인증되지 않은 사람은 로그인 화면을 보고, 인증되면 자식(데스크톱·
+ * 계정 페이지)이 렌더된다.
+ *
+ * 계정의 주인은 Omnis 자체계정이다. 허브에는 소셜 버튼이 없다 — 구글·카카오는
+ * Omnis 로그인 화면에서 고르는 문이고, 그 문으로 들어와도 Omnis 계정에 연결돼
+ * 있지 않으면 통과하지 못한다. 즉 **허브를 통해 Omnis 계정 없이 들어오는 길은 없다.**
  *
  * 허브는 사내 도구 전체의 **유일한 로그인 화면**이기도 하다. 다른 툴이
  * `/hub/?next=<경로>` 로 보내오면 로그인 뒤 그 경로로 돌려보낸다
@@ -67,59 +62,92 @@ type Phase =
  */
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>({ kind: "loading" })
-  const [pending, setPending] = useState<"google" | "kakao" | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
 
-    // 세션을 확인하기 전에 집는다. 이후 렌더에서 주소가 정리되기 때문이다.
-    captureNextTarget()
-
-    function resolve(session: Session | null) {
+    /** 로그인이 확정된 뒤. 다른 툴에서 넘어왔다면 그 자리로 돌려보낸다. */
+    function settle(session: OmnisSession) {
       if (cancelled) return
-
-      // 다른 툴에서 넘어왔다면 로그인이 끝나는 즉시 그 자리로 돌려보낸다.
-      // 데스크톱을 잠깐 보여줬다가 이동하면 화면이 튀므로 phase 를 바꾸지 않는다.
-      if (session) {
-        const next = takeNextTarget()
-        if (next) {
-          setPhase({ kind: "leaving" })
-          window.location.replace(`${window.location.origin}${next}`)
-          return
-        }
+      const next = takeNextTarget()
+      if (next) {
+        // 데스크톱을 잠깐 보여줬다가 이동하면 화면이 튀므로 phase 를 바꾸지 않는다.
+        setPhase({ kind: "leaving" })
+        window.location.replace(`${window.location.origin}${next}`)
+        return
       }
-
-      setPhase(session ? { kind: "ready", session } : { kind: "signed-out" })
+      setPhase({ kind: "ready", session })
     }
 
-    supabase.auth.getSession().then(({ data }) => resolve(data.session))
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) =>
-      resolve(session)
-    )
+    async function run() {
+      // 주소를 건드리는 일은 전부 먼저 끝낸다. 이후 렌더에서 주소창이 정리된다.
+      captureNextTarget()
+      const grant = takeGrantFromHash()
 
+      if (grant) {
+        try {
+          const session = await redeemGrant(grant)
+          if (cancelled) return
+          storeSession(session)
+          settle(session)
+        } catch (err) {
+          if (cancelled) return
+          clearStoredSession()
+          setPhase({
+            kind: "signed-out",
+            error:
+              err instanceof OmnisAuthError
+                ? err.message
+                : "로그인을 마치지 못했습니다. 다시 시도해 주세요.",
+          })
+        }
+        return
+      }
+
+      const stored = readStoredSession()
+      if (!stored) {
+        setPhase({ kind: "signed-out", error: null })
+        return
+      }
+      if (stored.expiresAt <= Date.now()) {
+        clearStoredSession()
+        setPhase({ kind: "signed-out", error: null })
+        return
+      }
+
+      // 저장된 세션을 그대로 믿지 않고 Omnis 에 한 번 되묻는다 — 퇴사 처리가
+      // 토큰 수명(8시간)을 기다리지 않고 다음 새로고침에 바로 먹히게 하는 값이다.
+      const outcome = await verifyStoredSession(stored.token)
+      if (cancelled) return
+
+      if (outcome.kind === "rejected") {
+        clearStoredSession()
+        setPhase({ kind: "signed-out", error: null })
+        return
+      }
+
+      if (outcome.kind === "ok") {
+        // 이름·역할이 Omnis 에서 바뀌었을 수 있으니 최신값으로 갈아 끼운다.
+        const refreshed = { ...stored, user: outcome.user }
+        storeSession(refreshed)
+        settle(refreshed)
+        return
+      }
+
+      // 판단 불가(네트워크 등). 런처는 데이터 경계가 아니므로 저장된 만료 시각을
+      // 믿고 통과시킨다. 인터넷이 한 번 끊길 때마다 사람을 쫓아낼 이유가 없다.
+      settle(stored)
+    }
+
+    void run()
     return () => {
       cancelled = true
-      sub.subscription.unsubscribe()
     }
   }, [])
 
-  async function signIn(provider: "google" | "kakao") {
-    setPending(provider)
-    setError(null)
-    const { error: err } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: redirectTo() },
-    })
-    if (err) {
-      setPending(null)
-      setError(`로그인을 시작하지 못했습니다: ${err.message}`)
-    }
-  }
-
-  async function signOut() {
-    await supabase.auth.signOut()
-    setPhase({ kind: "signed-out" })
+  function signOut() {
+    clearStoredSession()
+    setPhase({ kind: "signed-out", error: null })
   }
 
   if (phase.kind === "loading" || phase.kind === "leaving") {
@@ -133,20 +161,14 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }
 
   if (phase.kind === "signed-out") {
-    return (
-      <LoginScreen
-        onSignIn={signIn}
-        pending={pending}
-        error={error}
-      />
-    )
+    return <LoginScreen onSignIn={() => startSignIn()} error={phase.error} />
   }
 
   return (
     <AuthContext.Provider
       value={{
         session: phase.session,
-        user: toHubUser(phase.session),
+        user: toHubUser(phase.session.user),
         signOut,
       }}
     >

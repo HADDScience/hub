@@ -1,19 +1,15 @@
 "use client"
 
+import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import {
+  ArrowRight02Icon,
   DashboardSquare01Icon,
-  SparklesIcon,
   ShieldIcon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons"
 
-import {
-  GoogleSignInButton,
-  KakaoSignInButton,
-} from "@/components/auth/social-buttons"
-
-/** 카카오 노출 여부 — Supabase 콘솔에서 카카오 프로바이더를 켜면 true 로 둔다. */
-const KAKAO_ENABLED = true
+import { cn } from "@/lib/utils"
 
 const APPS = [
   ["omnis", "업무 관리"],
@@ -22,16 +18,20 @@ const APPS = [
 ] as const
 
 interface Props {
-  onSignIn: (provider: "google" | "kakao") => void
-  pending: "google" | "kakao" | null
+  onSignIn: () => void
   error: string | null
 }
 
 /**
  * 로그인 화면 — Omnis 인증 비주얼(다크 인디고 그라디언트 + 화이트 그리드).
- * 비밀번호 폼 대신 소셜 로그인 버튼만 둔다 (현재 소셜 전용).
+ *
+ * 버튼이 하나뿐인 것이 요점이다. 구글·카카오는 Omnis 로그인 화면에서 고른다.
+ * 여기에 소셜 버튼을 두면 로그인 수단이 두 군데로 갈라져, 어느 계정으로 들어왔는지
+ * 사람도 코드도 헷갈린다. 계정의 주인은 언제나 Omnis 자체계정 하나다.
  */
-export function LoginScreen({ onSignIn, pending, error }: Props) {
+export function LoginScreen({ onSignIn, error }: Props) {
+  const [pending, setPending] = useState(false)
+
   return (
     <main className="grid min-h-svh bg-background text-foreground lg:grid-cols-[minmax(0,1.05fr)_minmax(420px,0.95fr)]">
       {/* ─── 좌측: 다크 인디고 마케팅 표면 (데스크톱 전용) ─── */}
@@ -65,7 +65,7 @@ export function LoginScreen({ onSignIn, pending, error }: Props) {
           </h1>
           <p className="mt-5 max-w-[480px] text-[15px] leading-7 text-white/70">
             HADD Science 팀의 내부 도구를 하나의 데스크톱에서 열고 오갑니다.
-            사내 소셜 계정으로 로그인하세요.
+            Omnis 계정 하나로 모든 도구에 들어갑니다.
           </p>
 
           <div className="mt-10 grid max-w-[520px] grid-cols-3 gap-3">
@@ -82,7 +82,7 @@ export function LoginScreen({ onSignIn, pending, error }: Props) {
         </div>
       </aside>
 
-      {/* ─── 우측: 소셜 로그인 카드 (중립 표면) ─── */}
+      {/* ─── 우측: 로그인 카드 (중립 표면) ─── */}
       <section className="flex min-h-svh items-center justify-center bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-5 py-10 sm:px-8 dark:bg-[linear-gradient(180deg,var(--background)_0%,#111111_100%)]">
         <div className="w-full max-w-[420px]">
           <div className="mb-9 flex items-center gap-2.5">
@@ -105,24 +105,29 @@ export function LoginScreen({ onSignIn, pending, error }: Props) {
               허브에 로그인
             </h2>
             <p className="mt-2 text-[13.5px] leading-6 text-muted-foreground">
-              사내 소셜 계정으로 로그인하면 내부 도구 런처로 이동합니다.
+              Omnis 계정으로 로그인하면 내부 도구 런처로 이동합니다.
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col gap-2.5">
-            <GoogleSignInButton
-              onClick={() => onSignIn("google")}
-              disabled={pending !== null}
-              pending={pending === "google"}
-            />
-            {KAKAO_ENABLED ? (
-              <KakaoSignInButton
-                onClick={() => onSignIn("kakao")}
-                disabled={pending !== null}
-                pending={pending === "kakao"}
-              />
-            ) : null}
-          </div>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              setPending(true)
+              onSignIn()
+            }}
+            className={cn(
+              "mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4",
+              "text-[14px] font-semibold text-primary-foreground shadow-lg shadow-primary/20",
+              "transition-opacity outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-primary",
+              "disabled:cursor-not-allowed disabled:opacity-60"
+            )}
+          >
+            <span>{pending ? "Omnis 로 이동 중…" : "Omnis로 로그인"}</span>
+            {pending ? null : (
+              <HugeiconsIcon icon={ArrowRight02Icon} size={16} aria-hidden />
+            )}
+          </button>
 
           {error ? (
             <p
@@ -141,9 +146,9 @@ export function LoginScreen({ onSignIn, pending, error }: Props) {
               aria-hidden
             />
             <span>
-              현재 소셜 로그인만 지원합니다. 이메일·비밀번호 가입은 아직
-              제공하지 않습니다. 허브에서 로그인하면 다른 HADD 도구도 자동으로
-              로그인됩니다.
+              사내 도구는 모두 Omnis 계정 하나를 씁니다. 구글·카카오 로그인은
+              Omnis 화면에서 고를 수 있고, 계정에 연결해 둔 경우에만 들어옵니다.
+              계정이 필요하면 관리자에게 요청하세요.
             </span>
           </div>
         </div>
