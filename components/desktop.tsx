@@ -175,12 +175,23 @@ export function Desktop() {
                         className="relative grid size-9 shrink-0 place-items-center overflow-hidden rounded-[22%] border border-border"
                         aria-hidden
                       >
-                        <Image
-                          src={app.icon}
-                          alt=""
-                          sizes="36px"
-                          className="size-full object-cover"
-                        />
+                        {app.icon ? (
+                          <Image
+                            src={app.icon}
+                            alt=""
+                            sizes="36px"
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <span
+                            className={cn(
+                              "grid size-full place-items-center bg-gradient-to-br text-[13px] text-white",
+                              app.tint
+                            )}
+                          >
+                            {app.glyph}
+                          </span>
+                        )}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block text-xs font-medium text-foreground">

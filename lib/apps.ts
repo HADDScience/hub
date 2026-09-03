@@ -1,14 +1,23 @@
 /**
  * 런처에 표시할 앱 목록.
  *
+ * 여기 오는 것은 **Omnis 안으로 들어갈 수 없는 앱**뿐이다.
+ *
+ * 사내 자원 관리(업무·지식·지식재산권·고객)는 Omnis 한 곳으로 모으는 중이다.
+ * 그런 기능은 Omnis 의 메뉴 항목이지 별도 앱이 아니므로 여기 오지 않는다.
+ * 반대로 연구·분석 도구처럼 성격이 다르고 각자의 실행 환경을 가진 것들은
+ * 합칠 수가 없다 — 그것들의 진입점이 이 화면이다.
+ *
+ * 그래서 항목이 늘어나는 것은 좋은 신호가 아니다. 새 기능을 여기 올리기 전에
+ * "이건 Omnis 안 페이지가 될 수 없나"를 먼저 묻는다.
+ *
  * 앱을 추가하려면 이 배열에 항목 하나만 넣으면 된다. 화면·정렬·상태 배지가 따라온다.
  * 아이콘은 assets/icons 에 두고 정적 import 한다 (basePath 처리를 Next 가 해준다).
+ * 아이콘이 아직 없으면 비워도 된다 — 글리프가 대신 그려진다.
  */
 
 import type { StaticImageData } from "next/image"
 
-import crmIcon from "@/assets/icons/crm.png"
-import ipPlatformIcon from "@/assets/icons/ip-platform.png"
 import omnisIcon from "@/assets/icons/omnis.png"
 import ramanIcon from "@/assets/icons/raman-diff.png"
 
@@ -23,9 +32,9 @@ export interface LauncherApp {
   /** 비어 있으면(제작 예정) 실행되지 않는다 */
   url: string | null
   status: AppStatus
-  /** 앱 아이콘 이미지 */
-  icon: StaticImageData
-  /** 이미지를 못 불러올 때 대신 쓰는 글리프 */
+  /** 앱 아이콘 이미지. 없으면 글리프로 그린다. */
+  icon?: StaticImageData
+  /** 이미지가 없거나 못 불러올 때 대신 쓰는 글리프 */
   glyph: string
   /** 글리프 폴백용 배경 그라디언트 (tailwind 클래스) */
   tint: string
@@ -34,8 +43,8 @@ export interface LauncherApp {
 export const APPS: LauncherApp[] = [
   {
     id: "omnis",
-    name: "omnis",
-    description: "채팅 기반 업무 관리 시스템",
+    name: "Omnis",
+    description: "회사 자원 통합 관리 — 업무·지식·지식재산권·보고",
     url: "https://omnis-hadd.vercel.app",
     status: "live",
     icon: omnisIcon,
@@ -43,19 +52,9 @@ export const APPS: LauncherApp[] = [
     tint: "from-violet-500 to-indigo-600",
   },
   {
-    id: "ip-platform",
-    name: "ip-platform",
-    description: "지식재산권 팔로우업 · 상표·특허 현황과 미결 액션",
-    url: "https://haddscience.github.io/ip-platform/",
-    status: "live",
-    icon: ipPlatformIcon,
-    glyph: "▤",
-    tint: "from-teal-500 to-cyan-600",
-  },
-  {
-    id: "raman",
-    name: "raman-diff",
-    description: "Raman G-peak 차이(before-after) 분석 도구",
+    id: "ai-alzheimer",
+    name: "AI Alzheimer",
+    description: "그래핀 기반 치매진단 — 라만 G-peak 분광 분석",
     url: "https://haddscience.github.io/raman-g-peak-diff/",
     status: "live",
     icon: ramanIcon,
@@ -63,14 +62,14 @@ export const APPS: LauncherApp[] = [
     tint: "from-amber-500 to-orange-600",
   },
   {
-    id: "crm",
-    name: "CRM",
-    description: "고객 관리 — 제작 예정",
-    url: null,
-    status: "coming",
-    icon: crmIcon,
-    glyph: "◎",
-    tint: "from-slate-400 to-slate-600",
+    // 사내망(Tailscale) 안에서만 열린다. 밖에서는 주소가 풀리지 않는다.
+    id: "ai-ecm",
+    name: "AI ECM",
+    description: "장기별 ECM 조성 처방 — 사내망에서만 열립니다",
+    url: "https://macbookpro.tail28eea6.ts.net/",
+    status: "live",
+    glyph: "⬡",
+    tint: "from-teal-500 to-cyan-600",
   },
 ]
 

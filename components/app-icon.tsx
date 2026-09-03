@@ -62,13 +62,26 @@ export const AppIcon = forwardRef<HTMLButtonElement, AppIconProps>(
           )}
           aria-hidden
         >
-          <Image
-            src={app.icon}
-            alt=""
-            sizes="64px"
-            className="size-full object-cover"
-            priority
-          />
+          {app.icon ? (
+            <Image
+              src={app.icon}
+              alt=""
+              sizes="64px"
+              className="size-full object-cover"
+              priority
+            />
+          ) : (
+            // 아이콘이 아직 없는 앱. 글리프로 대신한다 — 아이콘을 만들 때까지
+            // 목록에 못 올리는 것보다, 자리를 먼저 잡는 편이 낫다.
+            <span
+              className={cn(
+                "grid size-full place-items-center bg-gradient-to-br text-[22px] text-white",
+                app.tint
+              )}
+            >
+              {app.glyph}
+            </span>
+          )}
           {/* 상태 점 — 기능적 색 코딩 (규칙 24) */}
           <span
             className={cn(

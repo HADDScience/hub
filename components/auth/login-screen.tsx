@@ -12,9 +12,9 @@ import {
 import { cn } from "@/lib/utils"
 
 const APPS = [
-  ["omnis", "업무 관리"],
-  ["ip-platform", "지식재산권"],
-  ["raman-diff", "라만 분석"],
+  ["Omnis", "회사 자원 통합 관리"],
+  ["AI Alzheimer", "치매진단 분광 분석"],
+  ["AI ECM", "ECM 조성 처방"],
 ] as const
 
 interface Props {
@@ -64,8 +64,8 @@ export function LoginScreen({ onSignIn, error }: Props) {
             <br />한 화면에서.
           </h1>
           <p className="mt-5 max-w-[480px] text-[15px] leading-7 text-white/70">
-            HADD Science 팀의 내부 도구를 하나의 데스크톱에서 열고 오갑니다.
-            Omnis 계정 하나로 모든 도구에 들어갑니다.
+            Omnis 에 담기지 않는 도구들의 진입점입니다. 사내 자원 관리는 Omnis 안에서,
+            연구·분석 도구는 여기서 엽니다. 계정은 Omnis 하나를 함께 씁니다.
           </p>
 
           <div className="mt-10 grid max-w-[520px] grid-cols-3 gap-3">
