@@ -62,12 +62,18 @@ export const APPS: LauncherApp[] = [
     tint: "from-amber-500 to-orange-600",
   },
   {
-    // 사내망(Tailscale) 안에서만 열린다. 밖에서는 주소가 풀리지 않는다.
+    // 내려가 있다. 예전에는 Tailscale Funnel 로 밖에 열어 뒀는데, 인증이
+    // "링크를 아는 사람은 다 통과"하는 공유 토큰 하나뿐이라 미공개 데이터셋과
+    // 논문 원장이 그 링크와 함께 새어나갈 수 있었다. 그래서 껐다.
+    //
+    // Omnis 로그인을 서버에서 검증하도록 붙이면 다시 열 수 있다. 그 작업은
+    // ecm_ai_mvp 저장소의 OMNIS-SSO-인수인계.md 에 있다. 열리는 시점에
+    // url 을 되돌리고 status 를 live 로 바꾸면 여기 할 일은 끝난다.
     id: "ai-ecm",
     name: "AI ECM",
-    description: "장기별 ECM 조성 처방 — 사내망에서만 열립니다",
-    url: "https://macbookpro.tail28eea6.ts.net/",
-    status: "live",
+    description: "장기별 ECM 조성 처방 — 로그인 연동 작업 중입니다",
+    url: null,
+    status: "maintenance",
     glyph: "⬡",
     tint: "from-teal-500 to-cyan-600",
   },
