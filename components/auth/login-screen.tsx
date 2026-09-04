@@ -23,11 +23,16 @@ interface Props {
 }
 
 /**
- * 로그인 화면 — Omnis 인증 비주얼(다크 인디고 그라디언트 + 화이트 그리드).
+ * 로그인 화면 — 사내 공통 인증 비주얼(다크 인디고 그라디언트 + 화이트 그리드).
  *
- * 버튼이 하나뿐인 것이 요점이다. 구글·카카오는 Omnis 로그인 화면에서 고른다.
+ * 버튼이 하나뿐인 것이 요점이다. 구글·카카오는 공통 로그인 화면에서 고른다.
  * 여기에 소셜 버튼을 두면 로그인 수단이 두 군데로 갈라져, 어느 계정으로 들어왔는지
- * 사람도 코드도 헷갈린다. 계정의 주인은 언제나 Omnis 자체계정 하나다.
+ * 사람도 코드도 헷갈린다. 계정의 주인은 언제나 HADD 계정 하나다.
+ *
+ * 「Omnis 로 로그인」이라고 쓰지 않는다. 계정은 회사 것이고 Omnis 는 그 계정으로
+ * 열리는 제품 중 하나다. 발급자가 Omnis 배포에 얹혀 있는 것은 계정 DB 가 거기
+ * 붙어 있어서지 Omnis 가 다른 도구의 부모라서가 아니다 — 화면이 그렇게 말하면
+ * 사람들이 구조를 반대로 읽는다.
  */
 export function LoginScreen({ onSignIn, error }: Props) {
   const [pending, setPending] = useState(false)
@@ -65,7 +70,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
           </h1>
           <p className="mt-5 max-w-[480px] text-[15px] leading-7 text-white/70">
             Omnis 에 담기지 않는 도구들의 진입점입니다. 사내 자원 관리는 Omnis 안에서,
-            연구·분석 도구는 여기서 엽니다. 계정은 Omnis 하나를 함께 씁니다.
+            연구·분석 도구는 여기서 엽니다. 계정은 HADD 계정 하나를 함께 씁니다.
           </p>
 
           <div className="mt-10 grid max-w-[520px] grid-cols-3 gap-3">
@@ -105,7 +110,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
               허브에 로그인
             </h2>
             <p className="mt-2 text-[13.5px] leading-6 text-muted-foreground">
-              Omnis 계정으로 로그인하면 내부 도구 런처로 이동합니다.
+              HADD 계정으로 로그인하면 내부 도구 런처로 이동합니다.
             </p>
           </div>
 
@@ -123,7 +128,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
               "disabled:cursor-not-allowed disabled:opacity-60"
             )}
           >
-            <span>{pending ? "Omnis 로 이동 중…" : "Omnis로 로그인"}</span>
+            <span>{pending ? "로그인 화면으로 이동 중…" : "HADD 계정으로 로그인"}</span>
             {pending ? null : (
               <HugeiconsIcon icon={ArrowRight02Icon} size={16} aria-hidden />
             )}
@@ -146,8 +151,8 @@ export function LoginScreen({ onSignIn, error }: Props) {
               aria-hidden
             />
             <span>
-              사내 도구는 모두 Omnis 계정 하나를 씁니다. 구글·카카오 로그인은
-              Omnis 화면에서 고를 수 있고, 계정에 연결해 둔 경우에만 들어옵니다.
+              사내 도구는 모두 HADD 계정 하나를 씁니다. 구글·카카오 로그인은 다음
+              화면에서 고를 수 있고, 계정에 연결해 둔 경우에만 들어옵니다.
               계정이 필요하면 관리자에게 요청하세요.
             </span>
           </div>

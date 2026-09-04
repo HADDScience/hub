@@ -14,7 +14,7 @@ import { Avatar } from "@/components/avatar"
 import { useAuth } from "@/components/auth/auth-gate"
 import { omnisSettingsUrl } from "@/lib/omnis-auth"
 
-/** Omnis 역할 표시용 한글 라벨. */
+/** 역할 표시용 한글 라벨. */
 const ROLE_LABEL: Record<string, string> = {
   ADMIN: "관리자",
   MEMBER: "구성원",
@@ -23,8 +23,8 @@ const ROLE_LABEL: Record<string, string> = {
 /**
  * 계정 설정 — 프로필 확인과 로그아웃.
  *
- * 계정 자체(이름·비밀번호·구글/카카오 연결)는 여기서 고치지 않는다. 주인이 Omnis
- * 자체계정이라 편집 화면도 Omnis 한 곳에만 둔다. 허브에도 같은 화면을 두면 두 곳이
+ * 계정 자체(이름·비밀번호·구글/카카오 연결)는 여기서 고치지 않는다. 주인이 HADD
+ * 계정이라 편집 화면도 한 곳에만 둔다. 허브에도 같은 화면을 두면 두 곳이
  * 서로 다른 상태를 보여주기 시작하고, 정적 배포인 허브는 그걸 고칠 권한도 없다.
  */
 export default function AccountPage() {
@@ -45,7 +45,7 @@ export default function AccountPage() {
           <div>
             <h1 className="text-lg font-semibold tracking-tight">계정 설정</h1>
             <p className="text-xs text-muted-foreground">
-              HADD SCIENCE 허브 · Omnis 계정
+              HADD SCIENCE 허브 · HADD 계정
             </p>
           </div>
         </div>
@@ -74,7 +74,7 @@ export default function AccountPage() {
           </div>
         </section>
 
-        {/* 계정 관리는 Omnis 한 곳에서 */}
+        {/* 계정 관리는 한 곳에서 */}
         <section className="mt-4 rounded-lg border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <HugeiconsIcon
@@ -86,7 +86,7 @@ export default function AccountPage() {
             로그인 수단
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            이름·비밀번호와 구글·카카오 연결은 Omnis 계정 설정에서 관리합니다.
+            이름·비밀번호와 구글·카카오 연결은 계정 설정에서 관리합니다.
             사내 도구는 모두 이 계정 하나를 씁니다.
           </p>
           <a
@@ -95,7 +95,7 @@ export default function AccountPage() {
             rel="noopener noreferrer"
             className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm font-medium transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
           >
-            Omnis 계정 설정 열기
+            계정 설정 열기
             <HugeiconsIcon icon={LinkSquare02Icon} size={14} aria-hidden />
           </a>
         </section>
@@ -106,7 +106,7 @@ export default function AccountPage() {
             <div>
               <p className="text-sm font-medium">로그아웃</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                이 브라우저에서 허브 세션을 종료합니다. Omnis 로그인은 유지되므로
+                이 브라우저에서 허브 세션을 종료합니다. HADD 계정 로그인은 유지되므로
                 다시 로그인하면 바로 들어옵니다.
               </p>
             </div>

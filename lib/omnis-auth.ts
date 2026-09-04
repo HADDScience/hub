@@ -23,6 +23,12 @@
  * 정적 앱이라 비밀키를 들 수 없다. 서명 검증은 Omnis 의 /api/sso/verify 가 대신
  * 하는데, 이게 오히려 낫다 — 퇴사 처리(isActive=false)가 토큰 수명을 기다리지 않고
  * 다음 새로고침에 바로 먹힌다.
+ *
+ * 이름에 관하여: 이 파일은 발급자를 "Omnis" 라고 부른다. 그게 실제로 토큰을 발급하는
+ * 배포이기 때문이고, 식별자를 바꾸면 어느 서버 이야기인지 흐려진다. 반면 **화면에는
+ * 그 이름이 나가지 않는다** — 사용자에게는 「HADD 계정」이다. 계정은 회사 것이고
+ * Omnis 는 그 계정으로 열리는 제품 중 하나다. 아래 messageFor 의 문장들이 "Omnis"
+ * 대신 "인증 서버"라고 쓰는 이유다.
  */
 
 const OMNIS_ORIGIN = process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://omnis-hadd.vercel.app"
@@ -128,9 +134,9 @@ function messageFor(code: string): string {
       return "이 계정은 비활성 상태입니다. 관리자에게 문의해 주세요."
     case "origin_not_allowed":
     case "unknown_app":
-      return "이 주소는 Omnis 에 등록돼 있지 않습니다. 관리자에게 알려주세요."
+      return "이 주소는 인증 서버에 등록돼 있지 않습니다. 관리자에게 알려주세요."
     case "sso_disabled":
-      return "Omnis 에 SSO 설정이 없습니다. 관리자에게 알려주세요."
+      return "인증 서버에 SSO 설정이 없습니다. 관리자에게 알려주세요."
     default:
       return "로그인을 마치지 못했습니다. 다시 시도해 주세요."
   }
@@ -150,7 +156,7 @@ export async function redeemGrant(grant: string): Promise<OmnisSession> {
   try {
     res = await post("/api/sso/redeem", grant)
   } catch {
-    throw new OmnisAuthError("network", "Omnis 에 연결하지 못했습니다. 네트워크를 확인해 주세요.")
+    throw new OmnisAuthError("network", "인증 서버에 연결하지 못했습니다. 네트워크를 확인해 주세요.")
   }
 
   const body = (await res.json().catch(() => null)) as
