@@ -45,7 +45,7 @@ export const APPS: LauncherApp[] = [
     id: "omnis",
     name: "Omnis",
     description: "회사 자원 통합 관리 — 업무·지식·지식재산권·보고",
-    url: "https://omnis-hadd.vercel.app",
+    url: "https://haddscience.vercel.app/omnis",
     status: "live",
     icon: omnisIcon,
     glyph: "◈",

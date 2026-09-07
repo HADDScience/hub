@@ -31,7 +31,7 @@
  * 대신 "인증 서버"라고 쓰는 이유다.
  */
 
-const OMNIS_ORIGIN = process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://omnis-hadd.vercel.app"
+const OMNIS_ORIGIN = process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.vercel.app/omnis"
 
 /** Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다. */
 const APP_ID = process.env.NEXT_PUBLIC_SSO_APP_ID ?? "hub"
@@ -77,7 +77,8 @@ export interface OmnisSession {
  */
 export function startSignIn(returnPath: string = `${BASE_PATH}/`): void {
   if (typeof window === "undefined") return
-  const url = new URL("/sso/authorize", OMNIS_ORIGIN)
+  // new URL("/sso/authorize", origin) 은 origin 의 경로(/omnis)를 지운다 — 이어 붙인다.
+  const url = new URL(`${OMNIS_ORIGIN}/sso/authorize`)
   url.searchParams.set("app", APP_ID)
   url.searchParams.set("next", returnPath)
   window.location.assign(url.toString())
