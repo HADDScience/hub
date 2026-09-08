@@ -26,7 +26,7 @@ export function MenuBar() {
       <Link
         href="/"
         aria-label="허브 홈"
-        className="flex items-center gap-1.5 rounded-md px-1 py-0.5 font-semibold tracking-tight outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
+        className="flex items-center gap-1.5 rounded-md px-1 py-0.5 font-semibold tracking-tight transition-colors outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-primary"
       >
         <span className="grid size-4 place-items-center rounded-[5px] bg-primary text-primary-foreground">
           <HugeiconsIcon icon={DashboardSquare01Icon} size={11} aria-hidden />
@@ -37,11 +37,17 @@ export function MenuBar() {
       <span className="hidden text-muted-foreground sm:inline">허브</span>
 
       <div className="ml-auto flex items-center gap-2.5">
+        <a
+          href="/hub/?intro=1"
+          className="rounded px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent"
+        >
+          허브 안내
+        </a>
         <span className="hidden font-mono text-[10.5px] text-muted-foreground sm:inline">
           {date}
         </span>
         <span
-          className="font-mono text-[11px] font-medium tabular-nums text-muted-foreground"
+          className="font-mono text-[11px] font-medium text-muted-foreground tabular-nums"
           suppressHydrationWarning
         >
           {time}

@@ -3,6 +3,7 @@ import { Geist_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { WelcomeGate } from "@/components/onboarding/welcome-gate"
 import { AuthGate } from "@/components/auth/auth-gate"
 import { cn } from "@/lib/utils"
 
@@ -21,7 +22,8 @@ const fontMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HADD SCIENCE 허브",
-  description: "HADD SCIENCE 내부 도구 런처 — omnis · ip-platform · raman-diff · CRM",
+  description:
+    "HADD SCIENCE 내부 도구 런처 — omnis · ip-platform · raman-diff · CRM",
 }
 
 export default function RootLayout({
@@ -46,7 +48,9 @@ export default function RootLayout({
       </head>
       <body>
         <ThemeProvider>
-          <AuthGate>{children}</AuthGate>
+          <WelcomeGate>
+            <AuthGate>{children}</AuthGate>
+          </WelcomeGate>
         </ThemeProvider>
       </body>
     </html>
