@@ -52,6 +52,18 @@ export const APPS: LauncherApp[] = [
     tint: "from-violet-500 to-indigo-600",
   },
   {
+    // 회사 홈페이지(haddscience.vercel.app)의 소식·사진을 고치는 편집 화면.
+    // Omnis 와 같은 오리진에 있지만 Omnis 의 메뉴가 아니라 홈페이지 쪽 도구다 —
+    // 로그인만 Omnis 계정을 쓰고, 고치는 대상은 대외 사이트다.
+    id: "site-admin",
+    name: "콘텐츠 관리",
+    description: "회사 홈페이지 소식·사진 편집",
+    url: "https://haddscience.vercel.app/admin/",
+    status: "live",
+    glyph: "✎",
+    tint: "from-sky-500 to-blue-600",
+  },
+  {
     id: "ai-alzheimer",
     name: "AI Alzheimer",
     description: "그래핀 기반 치매진단 — 라만 G-peak 분광 분석",
