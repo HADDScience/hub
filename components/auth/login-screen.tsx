@@ -42,7 +42,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
       {/* ─── 좌측: 다크 인디고 마케팅 표면 (데스크톱 전용) ─── */}
       <aside className="relative hidden overflow-hidden bg-[#0b1020] text-white lg:flex lg:min-h-svh lg:flex-col lg:justify-between">
         <div className="absolute inset-0 bg-[linear-gradient(135deg,#0b1020_0%,#172554_46%,#4f46e5_100%)]" />
-        <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div className="absolute inset-0 [background-image:linear-gradient(rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:44px_44px] opacity-25" />
         <div className="absolute top-20 right-[-120px] h-[360px] w-[360px] rounded-full border border-white/15" />
         <div className="absolute bottom-[-140px] left-[-100px] h-[420px] w-[420px] rounded-full border border-cyan-200/20" />
         <div className="absolute top-1/2 right-16 h-32 w-32 rotate-45 border border-white/15" />
@@ -64,13 +64,14 @@ export function LoginScreen({ onSignIn, error }: Props) {
             <HugeiconsIcon icon={SparklesIcon} size={14} aria-hidden />
             Internal tools launcher
           </div>
-          <h1 className="max-w-[560px] text-[44px] font-semibold leading-[1.05] tracking-[-0.02em] xl:text-[54px]">
+          <h1 className="max-w-[560px] text-[44px] leading-[1.05] font-semibold tracking-[-0.02em] xl:text-[54px]">
             모든 도구를
             <br />한 화면에서.
           </h1>
           <p className="mt-5 max-w-[480px] text-[15px] leading-7 text-white/70">
-            Omnis 에 담기지 않는 도구들의 진입점입니다. 사내 자원 관리는 Omnis 안에서,
-            연구·분석 도구는 여기서 엽니다. 계정은 HADD 계정 하나를 함께 씁니다.
+            Omnis 에 담기지 않는 도구들의 진입점입니다. 사내 자원 관리는 Omnis
+            안에서, 연구·분석 도구는 여기서 엽니다. 계정은 HADD 계정 하나를 함께
+            씁니다.
           </p>
 
           <div className="mt-10 grid max-w-[520px] grid-cols-3 gap-3">
@@ -80,7 +81,9 @@ export function LoginScreen({ onSignIn, error }: Props) {
                 className="rounded-lg border border-white/12 bg-white/8 p-3 backdrop-blur"
               >
                 <div className="text-[12px] font-semibold">{title}</div>
-                <div className="mt-1 text-[10.5px] text-white/55">{caption}</div>
+                <div className="mt-1 text-[10.5px] text-white/55">
+                  {caption}
+                </div>
               </div>
             ))}
           </div>
@@ -106,7 +109,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
 
           <div>
             <p className="text-[12px] font-semibold text-primary">WELCOME</p>
-            <h2 className="mt-2 text-[30px] font-semibold leading-tight tracking-[-0.02em] text-foreground">
+            <h2 className="mt-2 text-[30px] leading-tight font-semibold tracking-[-0.02em] text-foreground">
               허브에 로그인
             </h2>
             <p className="mt-2 text-[13.5px] leading-6 text-muted-foreground">
@@ -128,7 +131,9 @@ export function LoginScreen({ onSignIn, error }: Props) {
               "disabled:cursor-not-allowed disabled:opacity-60"
             )}
           >
-            <span>{pending ? "로그인 화면으로 이동 중…" : "HADD 계정으로 로그인"}</span>
+            <span>
+              {pending ? "로그인 화면으로 이동 중…" : "HADD 계정으로 로그인"}
+            </span>
             {pending ? null : (
               <HugeiconsIcon icon={ArrowRight02Icon} size={16} aria-hidden />
             )}
@@ -143,6 +148,13 @@ export function LoginScreen({ onSignIn, error }: Props) {
             </p>
           ) : null}
 
+          <a
+            href="/hub/?intro=1"
+            className="mt-5 block text-center text-[12px] text-muted-foreground underline underline-offset-4"
+          >
+            허브가 처음이신가요? 안내 다시 보기
+          </a>
+
           <div className="mt-6 flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2.5 text-[12px] leading-5 text-muted-foreground">
             <HugeiconsIcon
               icon={ShieldIcon}
@@ -151,8 +163,8 @@ export function LoginScreen({ onSignIn, error }: Props) {
               aria-hidden
             />
             <span>
-              사내 도구는 모두 HADD 계정 하나를 씁니다. 구글·카카오 로그인은 다음
-              화면에서 고를 수 있고, 계정에 연결해 둔 경우에만 들어옵니다.
+              사내 도구는 모두 HADD 계정 하나를 씁니다. 구글·카카오 로그인은
+              다음 화면에서 고를 수 있고, 계정에 연결해 둔 경우에만 들어옵니다.
               계정이 필요하면 관리자에게 요청하세요.
             </span>
           </div>

@@ -147,3 +147,5 @@
     letter-spacing: -0.01em;
     }
 }
+
+.welcome-loading { min-height: 100svh; background: #fff; }
