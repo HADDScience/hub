@@ -1,6 +1,12 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState } from "react"
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 
 import {
   clearStoredSession,
@@ -8,6 +14,9 @@ import {
   readStoredSession,
   redeemGrant,
   startSignIn,
+  signOutHaddAccount,
+  omnisSignOutUrl,
+  hasPendingSignOut,
   storeSession,
   takeGrantFromHash,
   verifyStoredSession,
@@ -46,6 +55,8 @@ type Phase =
   | { kind: "loading" }
   | { kind: "signed-out"; error: string | null }
   | { kind: "leaving" }
+  | { kind: "signing-out" }
+  | { kind: "signout-failed" }
   | { kind: "ready"; session: OmnisSession }
 
 /**
@@ -62,6 +73,19 @@ type Phase =
  */
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [phase, setPhase] = useState<Phase>({ kind: "loading" })
+
+  const signOut = useCallback(async () => {
+    takeNextTarget()
+    setPhase({ kind: "signing-out" })
+    try {
+      const outcome = await signOutHaddAccount()
+      if (outcome === "signed-out")
+        setPhase({ kind: "signed-out", error: null })
+    } catch {
+      // 로그인 버튼으로 즉시 재진입시키지 않는다. 공통 세션 종료를 재시도한다.
+      setPhase({ kind: "signout-failed" })
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -83,6 +107,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       // 주소를 건드리는 일은 전부 먼저 끝낸다. 이후 렌더에서 주소창이 정리된다.
       captureNextTarget()
       const grant = takeGrantFromHash()
+      // 실패 후 새로고침해도 살아 있는 쿠키로 즉시 재로그인되지 않게 한다.
+      if (hasPendingSignOut()) {
+        await signOut()
+        return
+      }
 
       if (grant) {
         try {
@@ -143,18 +172,53 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [signOut])
 
-  function signOut() {
-    clearStoredSession()
-    setPhase({ kind: "signed-out", error: null })
+  if (phase.kind === "signout-failed") {
+    return (
+      <main className="grid min-h-svh place-items-center bg-background px-6 text-foreground">
+        <div className="max-w-sm text-center">
+          <h1 className="text-lg font-semibold">
+            로그아웃을 완료하지 못했습니다
+          </h1>
+          <p
+            role="alert"
+            className="mt-3 text-sm leading-6 text-muted-foreground"
+          >
+            허브 세션은 지웠지만 HADD 계정의 로그아웃을 확인하지 못했습니다.
+            네트워크 연결을 확인하고 다시 시도해 주세요.
+          </p>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="mt-6 rounded-lg bg-primary px-5 py-3 text-sm text-primary-foreground"
+          >
+            로그아웃 다시 시도
+          </button>
+          <a
+            href={omnisSignOutUrl()}
+            className="mt-4 block text-sm text-muted-foreground underline underline-offset-4"
+          >
+            인증 서버에서 로그아웃하기
+          </a>
+        </div>
+      </main>
+    )
   }
 
-  if (phase.kind === "loading" || phase.kind === "leaving") {
+  if (
+    phase.kind === "loading" ||
+    phase.kind === "leaving" ||
+    phase.kind === "signing-out"
+  ) {
     return (
       <div className="grid min-h-svh place-items-center bg-background text-muted-foreground">
         <span className="text-sm">
-          {phase.kind === "leaving" ? "돌아가는 중…" : "확인 중…"}
+          {phase.kind === "signing-out"
+            ? "로그아웃 중…"
+            : phase.kind === "leaving"
+              ? "돌아가는 중…"
+              : "확인 중…"}
         </span>
       </div>
     )

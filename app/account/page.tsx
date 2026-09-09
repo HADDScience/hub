@@ -86,8 +86,8 @@ export default function AccountPage() {
             로그인 수단
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            이름·비밀번호와 구글·카카오 연결은 계정 설정에서 관리합니다.
-            사내 도구는 모두 이 계정 하나를 씁니다.
+            이름·비밀번호와 구글·카카오 연결은 계정 설정에서 관리합니다. 사내
+            도구는 모두 이 계정 하나를 씁니다.
           </p>
           <a
             href={omnisSettingsUrl()}
@@ -106,8 +106,8 @@ export default function AccountPage() {
             <div>
               <p className="text-sm font-medium">로그아웃</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                이 브라우저에서 허브 세션을 종료합니다. HADD 계정 로그인은 유지되므로
-                다시 로그인하면 바로 들어옵니다.
+                이 브라우저의 허브 세션과 HADD 계정 로그인을 종료합니다. 다음
+                로그인에서는 다시 인증해야 합니다.
               </p>
             </div>
             <button
