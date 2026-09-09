@@ -31,7 +31,8 @@
  * 대신 "인증 서버"라고 쓰는 이유다.
  */
 
-const OMNIS_ORIGIN = process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.vercel.app/omnis"
+const OMNIS_ORIGIN =
+  process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.vercel.app/omnis"
 
 /** Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다. */
 const APP_ID = process.env.NEXT_PUBLIC_SSO_APP_ID ?? "hub"
@@ -119,7 +120,10 @@ export function takeGrantFromHash(): string | null {
 // ─── Omnis 와 주고받기 ──────────────────────────────────────────────
 
 export class OmnisAuthError extends Error {
-  constructor(readonly code: string, message: string) {
+  constructor(
+    readonly code: string,
+    message: string
+  ) {
     super(message)
   }
 }
@@ -157,12 +161,18 @@ export async function redeemGrant(grant: string): Promise<OmnisSession> {
   try {
     res = await post("/api/sso/redeem", grant)
   } catch {
-    throw new OmnisAuthError("network", "인증 서버에 연결하지 못했습니다. 네트워크를 확인해 주세요.")
+    throw new OmnisAuthError(
+      "network",
+      "인증 서버에 연결하지 못했습니다. 네트워크를 확인해 주세요."
+    )
   }
 
-  const body = (await res.json().catch(() => null)) as
-    | { token?: string; expiresAt?: number; user?: OmnisUser; error?: string }
-    | null
+  const body = (await res.json().catch(() => null)) as {
+    token?: string
+    expiresAt?: number
+    user?: OmnisUser
+    error?: string
+  } | null
 
   if (!res.ok || !body?.token || !body.user || !body.expiresAt) {
     const code = body?.error ?? "unknown"
@@ -187,7 +197,9 @@ export type VerifyOutcome =
  * 먹힌다. 반대로 네트워크가 끊겼다고 로그아웃시키면, 데이터 경계도 아닌 런처가
  * 인터넷 한 번 끊길 때마다 사람을 쫓아낸다. 그래서 "거부"와 "판단 불가"를 나눈다.
  */
-export async function verifyStoredSession(token: string): Promise<VerifyOutcome> {
+export async function verifyStoredSession(
+  token: string
+): Promise<VerifyOutcome> {
   let res: Response
   try {
     res = await post("/api/sso/verify", token)
@@ -198,7 +210,9 @@ export async function verifyStoredSession(token: string): Promise<VerifyOutcome>
   if (res.status === 401 || res.status === 403) return { kind: "rejected" }
   if (!res.ok) return { kind: "unknown" }
 
-  const body = (await res.json().catch(() => null)) as { user?: OmnisUser } | null
+  const body = (await res.json().catch(() => null)) as {
+    user?: OmnisUser
+  } | null
   if (!body?.user) return { kind: "unknown" }
   return { kind: "ok", user: body.user }
 }
@@ -241,4 +255,113 @@ export function clearStoredSession(): void {
   } catch {
     /* 지울 수 없으면 만료를 기다리는 수밖에 없다 */
   }
+}
+
+// ─── 공통 로그아웃 ──────────────────────────────────────────────────
+
+const PENDING_SIGNOUT_KEY = `hadd.sso.signout-pending.${APP_ID}`
+
+export function hasPendingSignOut(): boolean {
+  try {
+    return window.localStorage.getItem(PENDING_SIGNOUT_KEY) === "1"
+  } catch {
+    return false
+  }
+}
+
+function markSignOutPending(pending: boolean): void {
+  try {
+    if (pending) window.localStorage.setItem(PENDING_SIGNOUT_KEY, "1")
+    else window.localStorage.removeItem(PENDING_SIGNOUT_KEY)
+  } catch {
+    /* 저장소가 막혀도 현재 화면에서 종료를 확인한다. */
+  }
+}
+
+/** 다른 오리진에서는 HttpOnly 쿠키에 접근할 수 없으므로 발급자 화면으로 간다. */
+export function omnisSignOutUrl(): string {
+  const url = new URL(`${OMNIS_ORIGIN}/api/auth/signout`)
+  // 절대 URL이어야 Omnis의 redirect 콜백이 /omnis를 중복해서 붙이지 않는다.
+  const callback =
+    typeof window !== "undefined" &&
+    new URL(OMNIS_ORIGIN).origin === window.location.origin
+      ? `${window.location.origin}${BASE_PATH}`
+      : `${OMNIS_ORIGIN}/login`
+  url.searchParams.set("callbackUrl", callback)
+  return url.toString()
+}
+
+/**
+ * Auth.js의 CSRF → POST signout 절차로 HADD 로그인 쿠키도 종료한다.
+ * 허브 토큰만 지우면 살아 있는 발급자 쿠키가 다음 로그인에서 즉시 새 토큰을 준다.
+ * 성공 응답만 믿지 않고 /session에서 실제 종료를 확인한다.
+ */
+let signOutRequest: Promise<"signed-out" | "redirecting"> | null = null
+
+export function signOutHaddAccount(): Promise<"signed-out" | "redirecting"> {
+  // StrictMode 재마운트와 연속 요청이 CSRF 쿠키를 서로 덮어쓰지 않게 한다.
+  if (!signOutRequest) {
+    signOutRequest = performSignOut().finally(() => {
+      signOutRequest = null
+    })
+  }
+  return signOutRequest
+}
+
+async function performSignOut(): Promise<"signed-out" | "redirecting"> {
+  markSignOutPending(true)
+  clearStoredSession()
+  if (new URL(OMNIS_ORIGIN).origin !== window.location.origin) {
+    window.location.assign(omnisSignOutUrl())
+    return "redirecting"
+  }
+
+  const authUrl = `${OMNIS_ORIGIN}/api/auth`
+  const options: RequestInit = {
+    credentials: "same-origin",
+    cache: "no-store",
+    signal: AbortSignal.timeout(10000),
+  }
+  const csrfResponse = await fetch(`${authUrl}/csrf`, options)
+  const csrf = (await csrfResponse.json()) as { csrfToken?: unknown }
+  if (
+    !csrfResponse.ok ||
+    typeof csrf.csrfToken !== "string" ||
+    !csrf.csrfToken
+  ) {
+    throw new Error("로그아웃 요청을 준비하지 못했습니다.")
+  }
+  const response = await fetch(`${authUrl}/signout`, {
+    ...options,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "X-Auth-Return-Redirect": "1",
+    },
+    body: new URLSearchParams({
+      csrfToken: csrf.csrfToken,
+      callbackUrl: `${window.location.origin}${BASE_PATH}`,
+    }),
+  })
+  if (!response.ok) throw new Error("HADD 계정 로그아웃에 실패했습니다.")
+
+  const sessionResponse = await fetch(`${authUrl}/session`, options)
+  const session: unknown = await sessionResponse.json()
+  if (
+    !sessionResponse.ok ||
+    (session !== null &&
+      (typeof session !== "object" ||
+        Array.isArray(session) ||
+        Object.keys(session).length > 0))
+  ) {
+    throw new Error("HADD 계정의 로그인 상태가 아직 남아 있습니다.")
+  }
+  // 다른 Omnis 탭의 NextAuth SessionProvider에도 세션 변경을 알린다.
+  if (typeof BroadcastChannel !== "undefined") {
+    const channel = new BroadcastChannel("next-auth")
+    channel.postMessage({ event: "session", data: { trigger: "signout" } })
+    channel.close()
+  }
+  markSignOutPending(false)
+  return "signed-out"
 }
