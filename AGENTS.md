@@ -36,7 +36,7 @@ Vercel 프로젝트 `hadd-hub` 가 이 저장소의 `main` 을 보고 있다. **
 
 | 이름 | 값 |
 |---|---|
-| `NEXT_PUBLIC_OMNIS_URL` | `https://haddscience.com/omnis` |
+| `NEXT_PUBLIC_OMNIS_URL` | `https://omnis.haddscience.com` (경로 접두어 없음) |
 | `NEXT_PUBLIC_SSO_APP_ID` | `hub-com` (등록 밖 오리진용 폴백) |
 
 `NEXT_PUBLIC_BASE_PATH` 는 **설정하지 않는다.** 남아 있으면 `lib/omnis-auth.ts` 의

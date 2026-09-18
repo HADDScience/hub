@@ -12,7 +12,7 @@
  * 또 하나의 문"이라, 허브는 소셜 제공자를 하나도 알 필요가 없다.
  *
  * 흐름:
- *   1. startSignIn()  → https://haddscience.com/omnis/sso/authorize?app=hub-com&next=/
+ *   1. startSignIn()  → https://omnis.haddscience.com/sso/authorize?app=hub-com&next=/
  *   2. Omnis 가 로그인을 확인하고 /#sso=<grant> 로 돌려보낸다 (60초·1회용)
  *   3. takeGrantFromHash() → redeemGrant() → 8시간짜리 세션 토큰 + 프로필
  *   4. 새로고침마다 verifyStoredSession() 으로 아직 유효한지 되묻는다
@@ -35,12 +35,14 @@
  * Omnis 의 주소. 허브와 **다른 오리진**이므로 redeem·verify 는 CORS 요청이다 —
  * Omnis 는 등록된 앱 오리진에만 Access-Control-Allow-Origin 을 준다.
  *
- * Omnis 도 자기 서브도메인(omnis.haddscience.com)으로 옮기는 중이다. 아직 basePath(/omnis)를
- * 달고 있어, 루트 주소로 부르면 307 로 /omnis 로 튕기는데 CORS preflight 는 리다이렉트를
- * 따라가지 않는다. 그래서 그쪽 전환이 끝나기 전까지는 홈페이지 경유 주소를 쓴다.
+ * 경로 접두어를 붙이지 않는다. Omnis 도 2026-09-18 에 자기 서브도메인 루트로 옮겼다.
+ * 옛 `/omnis/…` 경로는 호환 rewrite 로 아직 받지만, 새로 심을 이유가 없다.
+ *
+ * 홈페이지 경유 주소(haddscience.com/omnis)를 쓰지 않는 이유가 하나 더 있다 — 그쪽은 사람이
+ * 보는 경로를 308 로 이 호스트에 넘기는데, CORS preflight 는 리다이렉트를 따라가지 않는다.
  */
 const OMNIS_ORIGIN =
-  process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.com/omnis"
+  process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://omnis.haddscience.com"
 
 /**
  * Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다.
