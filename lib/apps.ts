@@ -45,7 +45,7 @@ export const APPS: LauncherApp[] = [
     id: "omnis",
     name: "Omnis",
     description: "회사 자원 통합 관리 — 업무·지식·지식재산권·보고",
-    url: "https://haddscience.com/omnis",
+    url: "https://omnis.haddscience.com",
     status: "live",
     icon: omnisIcon,
     glyph: "◈",
@@ -53,8 +53,9 @@ export const APPS: LauncherApp[] = [
   },
   {
     // 회사 홈페이지(haddscience.com)의 소식·사진을 고치는 편집 화면.
-    // Omnis 와 같은 오리진에 있지만 Omnis 의 메뉴가 아니라 홈페이지 쪽 도구다 —
-    // 로그인만 Omnis 계정을 쓰고, 고치는 대상은 대외 사이트다.
+    // Omnis 의 메뉴가 아니라 홈페이지 쪽 도구다 — 로그인만 Omnis 계정(website-admin-com)을
+    // 쓰고, 고치는 대상은 대외 사이트다. Omnis 가 자기 서브도메인으로 나가면서(2026-09-18)
+    // 이제 오리진도 서로 다르다.
     id: "site-admin",
     name: "콘텐츠 관리",
     description: "회사 홈페이지 소식·사진 편집",

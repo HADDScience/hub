@@ -45,7 +45,7 @@ HADD SCIENCE 내부 도구로 들어가는 입구입니다. 가상 데스크톱 
 
 | 앱 | 주소 | 상태 |
 | --- | --- | --- |
-| Omnis | https://haddscience.com/omnis | 운영중 |
+| Omnis | https://omnis.haddscience.com | 운영중 |
 | 콘텐츠 관리 | https://haddscience.com/admin/ | 운영중 |
 | AI Alzheimer | https://haddscience.github.io/raman-g-peak-diff/ | 운영중 |
 | AI ECM | — | 점검중 (로그인 연동 작업) |
@@ -73,7 +73,7 @@ HADD 계정(Omnis 가 발급하는 SSO 토큰)으로 들어갑니다. 구글·�
 로그인 수단이라, 허브는 소셜 제공자를 하나도 알지 못합니다.
 
 ```
-허브 → Omnis /sso/authorize?app=hub-com → 돌아올 때 #sso=<1회용 표>
+허브 → https://omnis.haddscience.com/sso/authorize?app=hub-com → 돌아올 때 #sso=<1회용 표>
      → /api/sso/redeem → 8시간 세션 토큰 · 새로고침마다 /api/sso/verify 로 재확인
 ```
 
