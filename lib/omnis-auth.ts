@@ -12,7 +12,7 @@
  * 또 하나의 문"이라, 허브는 소셜 제공자를 하나도 알 필요가 없다.
  *
  * 흐름:
- *   1. startSignIn()  → https://omnis-hadd.vercel.app/sso/authorize?app=hub-com&next=/
+ *   1. startSignIn()  → https://haddscience.com/omnis/sso/authorize?app=hub-com&next=/
  *   2. Omnis 가 로그인을 확인하고 /#sso=<grant> 로 돌려보낸다 (60초·1회용)
  *   3. takeGrantFromHash() → redeemGrant() → 8시간짜리 세션 토큰 + 프로필
  *   4. 새로고침마다 verifyStoredSession() 으로 아직 유효한지 되묻는다
@@ -31,20 +31,30 @@
  * 대신 "인증 서버"라고 쓰는 이유다.
  */
 
+/**
+ * Omnis 의 주소. 허브와 **다른 오리진**이므로 redeem·verify 는 CORS 요청이다 —
+ * Omnis 는 등록된 앱 오리진에만 Access-Control-Allow-Origin 을 준다.
+ *
+ * Omnis 도 자기 서브도메인(omnis.haddscience.com)으로 옮기는 중이다. 아직 basePath(/omnis)를
+ * 달고 있어, 루트 주소로 부르면 307 로 /omnis 로 튕기는데 CORS preflight 는 리다이렉트를
+ * 따라가지 않는다. 그래서 그쪽 전환이 끝나기 전까지는 홈페이지 경유 주소를 쓴다.
+ */
 const OMNIS_ORIGIN =
-  process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.vercel.app/omnis"
+  process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.com/omnis"
 
 /**
  * Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다.
  *
- * 같은 배포가 여러 오리진에서 보인다 — 도메인을 붙인 haddscience.com, 그전부터 쓰던
- * haddscience.vercel.app, 옛 github.io. Omnis 는 앱 id 하나를 오리진 하나에 묶으므로
- * 빌드 때 하나로 고정할 수 없다. 자기 주소를 보고 고른다(홈페이지 관리 화면과 같은 방식).
+ * 같은 화면이 두 오리진에서 보인다 — 새 주소 hub.haddscience.com 과 아직 살아 있는 옛
+ * github.io 배포. Omnis 는 앱 id 하나를 오리진 하나에 묶으므로 빌드 때 하나로 고정할 수
+ * 없다. 자기 주소를 보고 고른다(홈페이지 관리 화면과 같은 방식).
  * 등록 밖 주소(미리보기·로컬)는 환경변수, 없으면 "hub" 로 떨어지고 Omnis 가 거른다.
+ *
+ * haddscience.vercel.app(hub-vercel)은 뺐다 — 홈페이지의 /hub rewrite 가 걷히면서
+ * 그 주소로는 허브가 더 이상 보이지 않는다.
  */
 const APP_ID_BY_ORIGIN: Record<string, string> = {
   "https://hub.haddscience.com": "hub-com",
-  "https://haddscience.vercel.app": "hub-vercel",
   "https://haddscience.github.io": "hub",
 }
 const FALLBACK_APP_ID = process.env.NEXT_PUBLIC_SSO_APP_ID ?? "hub"
@@ -56,15 +66,20 @@ const APP_ID =
 /**
  * next.config.ts 의 basePath 와 같아야 한다. 서브도메인 루트로 옮긴 뒤(2026-09-18)로는 비어 있다 —
  * 옛 배포(github.io/hub)를 다시 올릴 일이 있으면 환경변수로 준다.
+ *
+ * 운영 환경에 이 환경변수를 남겨 두면 안 된다. `?next=/hub/` 를 보내게 되는데 Omnis 의
+ * hub-com 등록은 basePath 가 "" 라 거부한다 — 로그인이 통째로 막힌다.
  */
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
 
 /**
  * 세션 저장 키에 앱 id 를 넣는다.
  *
- * 허브와 ip-platform 은 같은 오리진이라 localStorage 를 통째로 나눠 쓴다. 그런데
- * Omnis 가 주는 토큰은 audience 가 앱별로 다르다 — 허브 토큰은 ip-platform 에서
- * 검증에 실패한다. 한 칸에 같이 넣으면 서로 덮어써서 둘 다 로그인이 풀린다.
+ * 한 오리진을 여러 툴이 나눠 쓰면 localStorage 도 통째로 공유된다(옛 github.io 의
+ * 허브와 ip-platform 이 그랬다). 그런데 Omnis 가 주는 토큰은 audience 가 앱별로 다르다 —
+ * 허브 토큰은 다른 툴에서 검증에 실패한다. 한 칸에 같이 넣으면 서로 덮어써서 둘 다
+ * 로그인이 풀린다. 서브도메인으로 갈라선 지금은 겹칠 일이 없지만, 키를 앱별로 두는
+ * 값이 더 크다 — 옛 주소가 아직 살아 있고, 나중에 다시 한 오리진을 나눠 쓸 수도 있다.
  *
  * 앱이 각자 자기 표를 받아야 하지만, 그 왕복은 사람 눈에 보이지 않는다.
  * Omnis 쿠키가 살아 있으면 /sso/authorize 가 곧바로 되돌려보내기 때문이다.

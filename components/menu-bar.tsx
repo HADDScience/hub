@@ -37,6 +37,9 @@ export function MenuBar() {
       <span className="hidden text-muted-foreground sm:inline">허브</span>
 
       <div className="ml-auto flex items-center gap-2.5">
+        {/* Link 가 아니라 <a> 다. 안내(WelcomeGate)는 루트 레이아웃에 있어 주소만 바뀌는
+            클라이언트 이동으로는 다시 마운트되지 않는다 — 전체 새로고침이어야 다시 뜬다. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a
           href="/?intro=1"
           className="rounded px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent"

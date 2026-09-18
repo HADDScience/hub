@@ -148,6 +148,8 @@ export function LoginScreen({ onSignIn, error }: Props) {
             </p>
           ) : null}
 
+          {/* 위 메뉴의 「허브 안내」와 같은 이유로 <a> 다 — 안내는 전체 새로고침에서만 다시 뜬다. */}
+          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
             href="/?intro=1"
             className="mt-5 block text-center text-[12px] text-muted-foreground underline underline-offset-4"
