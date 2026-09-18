@@ -45,20 +45,20 @@ export const APPS: LauncherApp[] = [
     id: "omnis",
     name: "Omnis",
     description: "회사 자원 통합 관리 — 업무·지식·지식재산권·보고",
-    url: "https://haddscience.vercel.app/omnis",
+    url: "https://haddscience.com/omnis",
     status: "live",
     icon: omnisIcon,
     glyph: "◈",
     tint: "from-violet-500 to-indigo-600",
   },
   {
-    // 회사 홈페이지(haddscience.vercel.app)의 소식·사진을 고치는 편집 화면.
+    // 회사 홈페이지(haddscience.com)의 소식·사진을 고치는 편집 화면.
     // Omnis 와 같은 오리진에 있지만 Omnis 의 메뉴가 아니라 홈페이지 쪽 도구다 —
     // 로그인만 Omnis 계정을 쓰고, 고치는 대상은 대외 사이트다.
     id: "site-admin",
     name: "콘텐츠 관리",
     description: "회사 홈페이지 소식·사진 편집",
-    url: "https://haddscience.vercel.app/admin/",
+    url: "https://haddscience.com/admin/",
     status: "live",
     glyph: "✎",
     tint: "from-sky-500 to-blue-600",

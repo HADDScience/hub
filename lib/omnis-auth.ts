@@ -34,8 +34,24 @@
 const OMNIS_ORIGIN =
   process.env.NEXT_PUBLIC_OMNIS_URL ?? "https://haddscience.vercel.app/omnis"
 
-/** Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다. */
-const APP_ID = process.env.NEXT_PUBLIC_SSO_APP_ID ?? "hub"
+/**
+ * Omnis 의 앱 화이트리스트에 등록된 id. 토큰의 audience 이기도 하다.
+ *
+ * 같은 배포가 여러 오리진에서 보인다 — 도메인을 붙인 haddscience.com, 그전부터 쓰던
+ * haddscience.vercel.app, 옛 github.io. Omnis 는 앱 id 하나를 오리진 하나에 묶으므로
+ * 빌드 때 하나로 고정할 수 없다. 자기 주소를 보고 고른다(홈페이지 관리 화면과 같은 방식).
+ * 등록 밖 주소(미리보기·로컬)는 환경변수, 없으면 "hub" 로 떨어지고 Omnis 가 거른다.
+ */
+const APP_ID_BY_ORIGIN: Record<string, string> = {
+  "https://haddscience.com": "hub-com",
+  "https://haddscience.vercel.app": "hub-vercel",
+  "https://haddscience.github.io": "hub",
+}
+const FALLBACK_APP_ID = process.env.NEXT_PUBLIC_SSO_APP_ID ?? "hub"
+const APP_ID =
+  typeof window === "undefined"
+    ? FALLBACK_APP_ID
+    : (APP_ID_BY_ORIGIN[window.location.origin] ?? FALLBACK_APP_ID)
 
 /** next.config.ts 의 basePath 와 같아야 한다. */
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/hub"
