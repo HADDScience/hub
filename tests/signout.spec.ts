@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test"
 
-const origin = "http://127.0.0.1:3011"
+import { ORIGIN as origin } from "../playwright.config"
 const user = {
   id: "fixture",
   name: "테스트 사용자",
@@ -36,7 +36,7 @@ async function signedIn(page: Page) {
   await page.route("**/api/sso/verify", (route) =>
     route.fulfill({ json: { user } })
   )
-  await page.goto("/hub/account")
+  await page.goto("/account")
   await expect(
     page.getByRole("button", { name: "로그아웃", exact: true })
   ).toBeVisible()
@@ -59,9 +59,9 @@ async function authEndpoints(
     expect(route.request().headers()["x-auth-return-redirect"]).toBe("1")
     const form = new URLSearchParams(route.request().postData()!)
     expect(form.get("csrfToken")).toBe("fixture-csrf")
-    expect(form.get("callbackUrl")).toBe(`${origin}/hub`)
+    expect(form.get("callbackUrl")).toBe(origin)
     await route.fulfill({
-      json: { url: `${origin}/hub` },
+      json: { url: origin },
       headers:
         mode === "cookie-survives"
           ? {}

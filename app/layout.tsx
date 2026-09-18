@@ -23,7 +23,7 @@ const fontMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HADD SCIENCE 허브",
   description:
-    "HADD SCIENCE 내부 도구 런처 — omnis · ip-platform · raman-diff · CRM",
+    "HADD SCIENCE 내부 도구 런처 — Omnis · 콘텐츠 관리 · AI Alzheimer · AI ECM",
 }
 
 export default function RootLayout({

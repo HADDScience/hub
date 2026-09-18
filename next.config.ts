@@ -5,8 +5,9 @@ import type { NextConfig } from "next"
  *
  * 2026-09-18 이전에는 홈페이지의 `/hub` 아래에 rewrite 로 얹혀 살았고, 그래서 basePath 가
  * `/hub` 였다 — 자산 경로가 홈페이지의 `/_next` 와 부딪히지 않게 하려는 것이었다. 도메인을
- * 붙이면서 자기 서브도메인을 받았으므로 그 접두어가 필요 없다. 옛 `/hub` 주소는 홈페이지가
- * 이 서브도메인으로 308 을 보낸다.
+ * 붙이면서 자기 서브도메인을 받았으므로 그 접두어가 필요 없다. 홈페이지 쪽 rewrite 는
+ * 걷혔고, 옛 `haddscience.com/hub/…` 는 홈페이지가 이 서브도메인으로 308 을 보낸다
+ * (hadd-website 2d874a1 — 쿼리를 유지하므로 다른 툴의 `?next=` 도 살아서 넘어온다).
  */
 const nextConfig: NextConfig = {
   turbopack: { root: import.meta.dirname },
