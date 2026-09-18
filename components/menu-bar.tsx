@@ -38,7 +38,7 @@ export function MenuBar() {
 
       <div className="ml-auto flex items-center gap-2.5">
         <a
-          href="/hub/?intro=1"
+          href="/?intro=1"
           className="rounded px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent"
         >
           허브 안내

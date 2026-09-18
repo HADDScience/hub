@@ -149,7 +149,7 @@ export function LoginScreen({ onSignIn, error }: Props) {
           ) : null}
 
           <a
-            href="/hub/?intro=1"
+            href="/?intro=1"
             className="mt-5 block text-center text-[12px] text-muted-foreground underline underline-offset-4"
           >
             허브가 처음이신가요? 안내 다시 보기

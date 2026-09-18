@@ -12,8 +12,8 @@
  * 또 하나의 문"이라, 허브는 소셜 제공자를 하나도 알 필요가 없다.
  *
  * 흐름:
- *   1. startSignIn()  → https://omnis-hadd.vercel.app/sso/authorize?app=hub&next=/hub/
- *   2. Omnis 가 로그인을 확인하고 /hub/#sso=<grant> 로 돌려보낸다 (60초·1회용)
+ *   1. startSignIn()  → https://omnis-hadd.vercel.app/sso/authorize?app=hub-com&next=/
+ *   2. Omnis 가 로그인을 확인하고 /#sso=<grant> 로 돌려보낸다 (60초·1회용)
  *   3. takeGrantFromHash() → redeemGrant() → 8시간짜리 세션 토큰 + 프로필
  *   4. 새로고침마다 verifyStoredSession() 으로 아직 유효한지 되묻는다
  *
@@ -43,7 +43,7 @@ const OMNIS_ORIGIN =
  * 등록 밖 주소(미리보기·로컬)는 환경변수, 없으면 "hub" 로 떨어지고 Omnis 가 거른다.
  */
 const APP_ID_BY_ORIGIN: Record<string, string> = {
-  "https://haddscience.com": "hub-com",
+  "https://hub.haddscience.com": "hub-com",
   "https://haddscience.vercel.app": "hub-vercel",
   "https://haddscience.github.io": "hub",
 }
@@ -53,8 +53,11 @@ const APP_ID =
     ? FALLBACK_APP_ID
     : (APP_ID_BY_ORIGIN[window.location.origin] ?? FALLBACK_APP_ID)
 
-/** next.config.ts 의 basePath 와 같아야 한다. */
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "/hub"
+/**
+ * next.config.ts 의 basePath 와 같아야 한다. 서브도메인 루트로 옮긴 뒤(2026-09-18)로는 비어 있다 —
+ * 옛 배포(github.io/hub)를 다시 올릴 일이 있으면 환경변수로 준다.
+ */
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
 
 /**
  * 세션 저장 키에 앱 id 를 넣는다.

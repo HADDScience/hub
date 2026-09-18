@@ -68,7 +68,7 @@ type Phase =
  * 있지 않으면 통과하지 못한다. 즉 **허브를 통해 Omnis 계정 없이 들어오는 길은 없다.**
  *
  * 허브는 사내 도구 전체의 **유일한 로그인 화면**이기도 하다. 다른 툴이
- * `/hub/?next=<경로>` 로 보내오면 로그인 뒤 그 경로로 돌려보낸다
+ * `hub.haddscience.com/?next=<경로>` 로 보내오면 로그인 뒤 그 경로로 돌려보낸다
  * (`lib/next-target.ts`).
  */
 export function AuthGate({ children }: { children: React.ReactNode }) {
