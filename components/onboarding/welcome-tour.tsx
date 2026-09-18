@@ -113,7 +113,7 @@ function ServiceMap() {
         <figure className={`service-preview service-${index}`} key={service.id}>
           <div className="service-screen">
             <Image
-              src={`/hub/onboarding/${service.id}.webp`}
+              src={`/onboarding/${service.id}.webp`}
               alt={`${service.name} ${service.screen}`}
               width={1280}
               height={820}
