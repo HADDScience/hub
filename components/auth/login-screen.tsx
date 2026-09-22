@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 const APPS = [
   ["Omnis", "회사 자원 통합 관리"],
   ["AI Alzheimer", "치매진단 분광 분석"],
-  ["AI ECM", "ECM 조성 처방"],
+  ["VivoFrame", "ECM 조성 처방"],
 ] as const
 
 interface Props {

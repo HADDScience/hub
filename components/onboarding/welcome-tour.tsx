@@ -23,7 +23,7 @@ const services = [
   },
   {
     id: "ecm",
-    name: "AI ECM",
+    name: "VivoFrame",
     description: "ECM 조성 예측",
     screen: "조성 예측 화면",
   },
@@ -65,7 +65,7 @@ function ServiceMap() {
     <div
       className="service-map"
       role="img"
-      aria-label="가운데 HADD Hub가 Omnis, AI Alzheimer, AI ECM, 콘텐츠 관리의 실제 화면과 연결된 지도"
+      aria-label="가운데 HADD Hub가 Omnis, AI Alzheimer, VivoFrame, 콘텐츠 관리의 실제 화면과 연결된 지도"
     >
       <svg
         className="map-connections"
