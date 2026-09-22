@@ -20,6 +20,7 @@ import type { StaticImageData } from "next/image"
 
 import omnisIcon from "@/assets/icons/omnis.png"
 import ramanIcon from "@/assets/icons/raman-diff.png"
+import vivoframeIcon from "@/assets/icons/vivoframe.png"
 
 export type AppStatus = "live" | "coming" | "maintenance"
 
@@ -93,6 +94,7 @@ export const APPS: LauncherApp[] = [
     description: "장기별 ECM 조성 처방",
     url: "https://vivoframe.haddscience.com",
     status: "live",
+    icon: vivoframeIcon,
     glyph: "⬡",
     tint: "from-teal-500 to-cyan-600",
   },
