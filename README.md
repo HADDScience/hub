@@ -48,7 +48,7 @@ HADD SCIENCE 내부 도구로 들어가는 입구입니다. 가상 데스크톱 
 | Omnis | https://omnis.haddscience.com | 운영중 |
 | 콘텐츠 관리 | https://haddscience.com/admin/ | 운영중 |
 | AI Alzheimer | https://haddscience.github.io/raman-g-peak-diff/ | 운영중 |
-| AI ECM | — | 점검중 (로그인 연동 작업) |
+| VivoFrame | https://vivoframe.haddscience.com | 운영중 |
 
 ## 로컬 실행
 

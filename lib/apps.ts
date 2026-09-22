@@ -81,13 +81,17 @@ export const APPS: LauncherApp[] = [
     // 지금은 서버가 Omnis 세션을 검증한다 — 로그인 없이 어느 경로를 열어도
     // 401 이고, 브라우저에는 Omnis 로그인으로 넘기는 브리지 화면만 나온다.
     //
-    // 허브를 거치지 않고 Omnis 로 직접 간다(앱 id `ai-ecm-com`, origin
-    // https://ecm.haddscience.com · basePath ""). 그래서 여기가 하는 일은
+    // 허브를 거치지 않고 Omnis 로 직접 간다(앱 id `vivoframe`, origin
+    // https://vivoframe.haddscience.com · basePath ""). 그래서 여기가 하는 일은
     // 주소를 내보내는 것뿐이다.
+    //
+    // id 는 `ai-ecm` 그대로 둔다 — 이건 허브 안에서만 쓰는 키이고, 바꾸면
+    // 온보딩 캡처 경로(public/onboarding)까지 따라 움직인다. 밖으로 나가는
+    // 이름은 name 과 url 뿐이다.
     id: "ai-ecm",
-    name: "AI ECM",
+    name: "VivoFrame",
     description: "장기별 ECM 조성 처방",
-    url: "https://ecm.haddscience.com",
+    url: "https://vivoframe.haddscience.com",
     status: "live",
     glyph: "⬡",
     tint: "from-teal-500 to-cyan-600",
